@@ -20,7 +20,7 @@ function App() {
                     <header className="flex items-center justify-center py-12 flex-col gap-5">
                         <div className="flex items-center gap-2 flex-col md:flex-row">
                             <img src={logo} alt="logo" className="w-24 h-24 mx-auto" />
-                            <h1 className="text-5xl text-center font-bold text-purple-800">Digit Recognizer</h1>
+                            <h1 className="text-5xl text-center font-bold text-purple-800">Digit Classifier</h1>
                         </div>
                         <p className="text-lg text-center text-gray-600">Draw a digit and see if the model can recognize it</p>
                     </header>
