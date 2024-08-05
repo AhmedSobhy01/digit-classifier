@@ -1,12 +1,8 @@
 import styles from "./SmilingLoader.module.css";
 
-function SmilingLoader() {
+function SmilingLoader(props: React.HTMLAttributes<HTMLDivElement>) {
     return (
-        <div>
-            {/* <div className="leftEye"></div>
-            <div className="rightEye"></div>
-            <div className="mouth"></div> */}
-
+        <div {...props}>
             <div className={styles.leftEye}></div>
             <div className={styles.rightEye}></div>
             <div className={styles.mouth}></div>
