@@ -25,7 +25,7 @@ function DrawingCanvas({ image }: { image: string | null }) {
                 return fd;
             })
             .then((fd) =>
-                fetch("http://localhost:5000/predict", {
+                fetch(import.meta.env.VITE_MODEL_URL || "http://localhost:5000/predict", {
                     method: "POST",
                     body: fd,
                 })
