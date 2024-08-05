@@ -1,6 +1,6 @@
 <h1 align="center">🔎 Digit Classifier</h1>
 
-![screenshot](https://github.com/user-attachments/assets/f921f8b5-2c02-4e3e-8fd5-2f7ef4238904)
+![screenshot](https://github.com/user-attachments/assets/de0e06fc-7f17-4a47-aabc-ea75e19135ef)
 
 This project is my "Hello World" as a machine learning student. It features a digit classifier powered by a TensorFlow Neural Network, trained on the MNIST dataset. The API is wrapped in a Docker image, and there’s even a cool React frontend where you can draw digits and see instant predictions!
 
