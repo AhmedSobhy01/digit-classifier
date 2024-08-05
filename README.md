@@ -82,19 +82,13 @@ The React frontend is where the fun happens! Follow these steps to build and run
     npm install
     ```
 
-3. **Build the React application**:
-
-    ```bash
-    npm run build
-    ```
-
-4. **Serve the application locally**:
+3. **Serve the application locally**:
 
     ```bash
     npm start
     ```
 
-    The frontend app will be available at `http://localhost:3000`.
+    The frontend app will be available at `http://localhost:3000` (port maybe different).
 
 ## 🌐 Live Demo
 
