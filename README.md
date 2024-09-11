@@ -8,12 +8,10 @@ This project is my "Hello World" as a machine learning student. It features a di
 
 ## 📁 Project Structure
 
+-   **`frontend/`** - The React frontend app, where users can draw digits and have fun! 🎨
 -   **`models/`** - TensorFlow model files live here! 🧠
 -   **`server/`** - FastAPI application folder, the brain of our backend! 🖥️
-    -   **`main.py`** - The heart of the FastAPI app, handling all API requests and the magical script that loads the model and predicts the digits. 💡
--   **`frontend/`** - The React frontend app, where users can draw digits and have fun! 🎨
--   **`Dockerfile`** - Configuration to wrap everything in a Docker image. 🐳
--   **`requirements.txt`** - List of dependencies to make everything work smoothly. 🛠️
+-   **`docker-compose.yml`** - Docker Compose configuration to build and run both frontend and backend services. 📦
 
 ## 🚀 Getting Started
 
@@ -22,7 +20,7 @@ This project is my "Hello World" as a machine learning student. It features a di
 -   **Docker** - To build and run the API in a container. 🐋
 -   **Node.js and npm** - For building the frontend application. 📦
 
-### 🛠️ Building the Docker Image
+### 🛠️ Building and Running the Application with Docker Compose
 
 1. **Clone the repository**:
 
@@ -31,18 +29,18 @@ This project is my "Hello World" as a machine learning student. It features a di
     cd digit-classifier
     ```
 
-2. **Build the Docker image**:
+2. **Build and start the services**:
 
     ```bash
-    docker build -t digit-classifier-api .
+    docker-compose up --build -d
     ```
 
-3. **Once the image is built, it’s time to launch the API**:
-    ```bash
-    docker run -d -p 5000:5000 digit-classifier-api
-    ```
+    This command builds the Docker images for both the React frontend and the FastAPI backend, then starts the services defined in `docker-compose.yml`.
 
-Your API is now live at `http://localhost:5000`!
+3. **Access the services**:
+
+    - **React Frontend**: Open `http://localhost:3000` in your browser to use the frontend app.
+    - **FastAPI Backend**: The backend API will be accessible at `http://localhost:5000`.
 
 ### 🔗 API Endpoints
 
@@ -66,9 +64,9 @@ Your API is now live at `http://localhost:5000`!
     }
     ```
 
-## 🎨 Building the Frontend Web Application
+## 🎨 Building the Frontend Web Application (Optional)
 
-The React frontend is where the fun happens! Follow these steps to build and run it locally:
+If you prefer to build and run the React frontend without Docker, follow these steps:
 
 1. **Navigate to the `frontend` directory**:
 
@@ -82,13 +80,19 @@ The React frontend is where the fun happens! Follow these steps to build and run
     npm install
     ```
 
-3. **Serve the application locally**:
+3. **Build the frontend application**:
+
+    ```bash
+    npm run build
+    ```
+
+4. **Serve the application locally**:
 
     ```bash
     npm start
     ```
 
-    The frontend app will be available at `http://localhost:3000` (port maybe different).
+    The frontend app will be available at `http://localhost:3000` (port may vary).
 
 ## 🌐 Live Demo
 
