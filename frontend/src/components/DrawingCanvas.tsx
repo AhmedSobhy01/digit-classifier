@@ -1,11 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { throttle } from "lodash";
 
-function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => void }) {
-    const canvasElement = useRef<HTMLCanvasElement>(null);
-    let context = canvasElement.current?.getContext("2d")!;
-
-    let is_drawing = false;
+const DrawingCanvas: React.FC<{ onNewImage: (image: string | null) => void }> = ({ onNewImage }) => {
+    const canvasElement = useRef<HTMLCanvasElement | null>(null);
+    const isDrawing = useRef(false);
 
     const convertToImage = () => {
         const image = new Image();
@@ -14,10 +12,18 @@ function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => v
         return image.src;
     };
 
-    const sendImage = throttle(() => onNewImage(convertToImage()), 1000);
+    const sendImage = useMemo(
+        () =>
+            throttle(() => {
+                if (canvasElement.current) {
+                    onNewImage(convertToImage());
+                }
+            }, 700),
+        [onNewImage]
+    );
 
     const getX = (event: MouseEvent | TouchEvent) => {
-        if (!canvasElement.current) return 0;
+        if (canvasElement.current === null) return 0;
 
         let mouseX = (event as TouchEvent).changedTouches ? (event as TouchEvent).changedTouches[0].pageX : (event as MouseEvent).pageX;
         mouseX -= canvasElement.current.offsetLeft;
@@ -26,7 +32,7 @@ function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => v
     };
 
     const getY = (event: MouseEvent | TouchEvent) => {
-        if (!canvasElement.current) return 0;
+        if (canvasElement.current === null) return 0;
 
         let mouseY = (event as TouchEvent).changedTouches ? (event as TouchEvent).changedTouches[0].pageY : (event as MouseEvent).pageY;
         mouseY -= canvasElement.current.offsetTop;
@@ -34,18 +40,22 @@ function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => v
         return mouseY;
     };
 
-    const onStart = (event: MouseEvent | TouchEvent) => {
+    const onStart = useCallback((event: MouseEvent | TouchEvent) => {
         event.preventDefault();
 
-        is_drawing = true;
+        const context = canvasElement.current!.getContext("2d")!;
+
+        isDrawing.current = true;
         context.beginPath();
         context.moveTo(getX(event), getY(event));
-    };
+    }, []);
 
-    const onMove = (event: MouseEvent | TouchEvent) => {
+    const onMove = useCallback((event: MouseEvent | TouchEvent) => {
         event.preventDefault();
 
-        if (is_drawing) {
+        if (isDrawing.current) {
+            const context = canvasElement.current!.getContext("2d")!;
+
             context.lineTo(getX(event), getY(event));
             context.strokeStyle = "black";
             context.lineWidth = 20;
@@ -53,22 +63,30 @@ function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => v
             context.lineJoin = "round";
             context.stroke();
         }
-    };
+    }, []);
 
-    const onEnd = (event: MouseEvent | TouchEvent) => {
-        event.preventDefault();
+    const onEnd = useCallback(
+        (event: MouseEvent | TouchEvent) => {
+            event.preventDefault();
 
-        if (is_drawing) {
-            context.stroke();
-            context.closePath();
-            is_drawing = false;
+            if (isDrawing.current) {
+                const context = canvasElement.current!.getContext("2d")!;
 
-            sendImage();
-        }
-    };
+                context.stroke();
+                context.closePath();
+                isDrawing.current = false;
 
-    const clearCanvas = () => {
-        context.fillStyle = "white";
+                sendImage();
+            }
+        },
+        [sendImage]
+    );
+
+    const clearCanvas = (): void => {
+        if (canvasElement.current === null) return;
+
+        const context = canvasElement.current.getContext("2d")!;
+
         context.clearRect(0, 0, canvasElement.current!.width, canvasElement.current!.width);
         context.fillRect(0, 0, canvasElement.current!.width, canvasElement.current!.width);
 
@@ -76,31 +94,33 @@ function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => v
     };
 
     useEffect(() => {
-        if (!canvasElement.current) return;
+        const canvasElm = canvasElement.current;
+        if (canvasElm === null) return;
 
-        context = canvasElement.current.getContext("2d")!;
+        // Get the canvas context
+        const context = canvasElm.getContext("2d")!;
 
         // Clear the canvas
         context.fillStyle = "white";
-        context.fillRect(0, 0, canvasElement.current.width, canvasElement.current.height);
+        context.fillRect(0, 0, canvasElm.width, canvasElm.height);
 
         // Initialize event listeners (didn't use React's event listeners because they don't support passive: false)
-        canvasElement.current.addEventListener("mousedown", onStart, { passive: false });
-        canvasElement.current.addEventListener("touchstart", onStart, { passive: false });
-        canvasElement.current.addEventListener("mousemove", onMove, { passive: false });
-        canvasElement.current.addEventListener("touchmove", onMove, { passive: false });
-        canvasElement.current.addEventListener("mouseup", onEnd, { passive: false });
-        canvasElement.current.addEventListener("touchend", onEnd, { passive: false });
+        canvasElm.addEventListener("mousedown", onStart, { passive: false });
+        canvasElm.addEventListener("touchstart", onStart, { passive: false });
+        canvasElm.addEventListener("mousemove", onMove, { passive: false });
+        canvasElm.addEventListener("touchmove", onMove, { passive: false });
+        canvasElm.addEventListener("mouseup", onEnd, { passive: false });
+        canvasElm.addEventListener("touchend", onEnd, { passive: false });
 
         return () => {
-            canvasElement.current!.removeEventListener("mousedown", onStart);
-            canvasElement.current!.removeEventListener("touchstart", onStart);
-            canvasElement.current!.removeEventListener("mousemove", onMove);
-            canvasElement.current!.removeEventListener("touchmove", onMove);
-            canvasElement.current!.removeEventListener("mouseup", onEnd);
-            canvasElement.current!.removeEventListener("touchend", onEnd);
+            canvasElm.removeEventListener("mousedown", onStart);
+            canvasElm.removeEventListener("touchstart", onStart);
+            canvasElm.removeEventListener("mousemove", onMove);
+            canvasElm.removeEventListener("touchmove", onMove);
+            canvasElm.removeEventListener("mouseup", onEnd);
+            canvasElm.removeEventListener("touchend", onEnd);
         };
-    }, []);
+    }, [onStart, onMove, onEnd]);
 
     return (
         <div className="flex flex-col items-center w-fit">
@@ -117,6 +137,6 @@ function DrawingCanvas({ onNewImage }: { onNewImage: (image: string | null) => v
             </div>
         </div>
     );
-}
+};
 
 export default DrawingCanvas;

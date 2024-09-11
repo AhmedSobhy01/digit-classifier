@@ -1,6 +1,6 @@
 import styles from "./SmilingLoader.module.css";
 
-function SmilingLoader(props: React.HTMLAttributes<HTMLDivElement>) {
+const SmilingLoader: React.FC<React.HTMLProps<HTMLDivElement>> = (props) => {
     return (
         <div {...props}>
             <div className={styles.leftEye}></div>
@@ -8,6 +8,6 @@ function SmilingLoader(props: React.HTMLAttributes<HTMLDivElement>) {
             <div className={styles.mouth}></div>
         </div>
     );
-}
+};
 
 export default SmilingLoader;

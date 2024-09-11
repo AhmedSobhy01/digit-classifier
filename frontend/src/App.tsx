@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import DrawingCanvas from "./components/DrawingCanvas.tsx";
 import Predictions from "./components/Predictions.tsx";
 import logo from "./assets/magnifier.gif";
 
-function App() {
+const App: React.FC = () => {
     const [image, setImage] = useState<string | null>(null);
 
-    const newImageHandler = (image: string | null) => setImage(image);
+    const newImageHandler = useCallback((image: string | null) => setImage(image), []);
 
     return (
         <>
@@ -33,6 +33,6 @@ function App() {
             </div>
         </>
     );
-}
+};
 
 export default App;

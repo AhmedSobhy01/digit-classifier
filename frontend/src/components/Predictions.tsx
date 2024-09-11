@@ -3,19 +3,22 @@ import { ToastContainer, Bounce, toast } from "react-toastify";
 import SmilingLoader from "./SmilingLoader.tsx";
 import "react-toastify/dist/ReactToastify.css";
 
-function DrawingCanvas({ image }: { image: string | null }) {
+const Predictions: React.FC<{ image: string | null }> = ({ image }) => {
     const [loading, setLoading] = useState(false);
     const [predictions, setPredictions] = useState<{ probabilities: number[]; prediction: number | null }>({ probabilities: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], prediction: null });
 
     useEffect(() => {
-        if (!image) {
+        if (image === null) {
             setPredictions({ probabilities: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], prediction: null });
             return;
         }
 
-        setLoading(true);
+        setLoading((prev) => !prev);
 
-        fetch(image)
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        fetch(image, { signal })
             .then((res) => res.blob())
             .then((blob) => {
                 const fd = new FormData();
@@ -28,6 +31,7 @@ function DrawingCanvas({ image }: { image: string | null }) {
                 fetch(import.meta.env.VITE_MODEL_URL || "http://localhost:5000/predict", {
                     method: "POST",
                     body: fd,
+                    signal,
                 })
                     .then((response) => response.json())
                     .then((data) =>
@@ -36,9 +40,13 @@ function DrawingCanvas({ image }: { image: string | null }) {
                             prediction: data.prediction,
                         })
                     )
-                    .catch((_) => toast.error("An error occurred while trying to predict the image"))
-                    .finally(() => setLoading(false))
+                    .catch((err) => {
+                        if (err.name !== "AbortError") toast.error("An error occurred while trying to predict the image");
+                    })
+                    .finally(() => setLoading((prev) => !prev))
             );
+
+        return () => controller.abort();
     }, [image]);
 
     return (
@@ -76,6 +84,6 @@ function DrawingCanvas({ image }: { image: string | null }) {
             </div>
         </>
     );
-}
+};
 
-export default DrawingCanvas;
+export default Predictions;
