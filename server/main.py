@@ -41,6 +41,11 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
 @app.post("/predict")
 def predict_mnist_image(file: UploadFile = File(...)):
     try:

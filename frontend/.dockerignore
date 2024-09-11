@@ -1,0 +1,15 @@
+node_modules
+build
+*.log
+*.tmp
+*.temp
+.env
+.DS_Store
+Thumbs.db
+.git
+.gitignore
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+.npm
