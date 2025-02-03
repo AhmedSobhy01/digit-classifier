@@ -122,6 +122,21 @@ const DrawingCanvas: React.FC<{ onNewImage: (image: string | null) => void }> = 
         };
     }, [onStart, onMove, onEnd]);
 
+    // Add global event listeners for mouseup and touchend events
+    useEffect(() => {
+        const handleGlobalEnd = (event: MouseEvent | TouchEvent) => {
+            if (isDrawing.current) onEnd(event);
+        };
+
+        window.addEventListener("mouseup", handleGlobalEnd, { passive: false });
+        window.addEventListener("touchend", handleGlobalEnd, { passive: false });
+
+        return () => {
+            window.removeEventListener("mouseup", handleGlobalEnd);
+            window.removeEventListener("touchend", handleGlobalEnd);
+        };
+    }, [onEnd]);
+
     return (
         <div className="flex flex-col items-center w-fit">
             <div className="bg-white rounded-lg shadow-lg p-6 w-80 flex flex-col items-center">
